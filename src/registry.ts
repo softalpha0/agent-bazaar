@@ -21,14 +21,12 @@ export interface Service {
   updatedAt: string;
 }
 
-// In-memory registry — pre-seeded with known services
 const services = new Map<string, Service>();
 
 function seed() {
   const network = CONFIG.STELLAR_NETWORK;
   const asset = network === 'mainnet' ? 'USDC' : 'XLM';
 
-  // Self-register AgentBazaar Search
   register({
     id: 'agent-bazaar-search',
     name: 'AgentBazaar Search',
@@ -43,7 +41,6 @@ function seed() {
     network,
   });
 
-  // Pre-register Risk Sentinel as a sibling service
   register({
     id: 'risk-sentinel',
     name: 'Risk Sentinel',
@@ -86,5 +83,4 @@ export function remove(id: string): boolean {
   return services.delete(id);
 }
 
-// Seed on module load
 seed();

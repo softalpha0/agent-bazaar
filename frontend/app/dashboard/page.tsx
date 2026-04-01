@@ -63,12 +63,11 @@ export default function Dashboard() {
       ]);
       if (sRes.ok) setStats(await sRes.json());
       if (bRes.ok) setBalance(await bRes.json());
-    } catch { /* backend offline */ }
+    } catch { }
   }
 
   async function fetchPayments(publicKey: string) {
     try {
-      // Fetch last 8 for the feed
       const res = await fetch(
         `https://horizon-testnet.stellar.org/accounts/${publicKey}/payments?order=desc&limit=8`
       );
@@ -78,7 +77,6 @@ export default function Dashboard() {
       );
       setPayments(incoming);
 
-      // Fetch up to 200 to calculate total earned
       const allRes = await fetch(
         `https://horizon-testnet.stellar.org/accounts/${publicKey}/payments?order=desc&limit=200`
       );
@@ -87,7 +85,7 @@ export default function Dashboard() {
         (p: Payment) => p.type === 'payment' && p.asset_type === 'native' && p.from !== publicKey
       );
       setAllPayments(allIncoming);
-    } catch { /* horizon offline */ }
+    } catch { }
   }
 
   useEffect(() => {
@@ -118,7 +116,6 @@ export default function Dashboard() {
     return () => clearInterval(t);
   }, [stats?.startedAt]);
 
-  // Derive earned and call count from real Horizon data
   const totalEarned = allPayments.reduce((sum, p) => sum + parseFloat(p.amount ?? '0'), 0);
   const earned = allPayments.length > 0 ? totalEarned.toFixed(4) : (stats ? stats.totalEarned.toFixed(4) : '—');
   const totalCalls = allPayments.length > 0 ? allPayments.length : (stats?.totalCalls ?? 0);
@@ -129,7 +126,6 @@ export default function Dashboard() {
 
       <div className="max-w-5xl mx-auto px-6 pt-24 pb-20">
 
-        {/* Page title */}
         <div className="flex items-center justify-between mb-10 flex-wrap gap-4">
           <div>
             <p className="text-xs font-medium text-zinc-500 uppercase tracking-widest mb-1">Live</p>
@@ -140,7 +136,6 @@ export default function Dashboard() {
           </Link>
         </div>
 
-        {/* Stat cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <StatCard label="Total calls" value={totalCalls} live />
           <StatCard label="XLM earned" value={earned} sub={`${stats?.asset ?? 'XLM'} testnet`} live />
@@ -153,10 +148,8 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Endpoint breakdown + recent payments */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
 
-          {/* Endpoint breakdown */}
           <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-6">
             <p className="text-xs font-medium text-zinc-500 uppercase tracking-widest mb-5">Endpoint calls</p>
             <div className="flex flex-col gap-4">
@@ -188,7 +181,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Wallet info */}
           <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-6">
             <p className="text-xs font-medium text-zinc-500 uppercase tracking-widest mb-5">Receiving wallet</p>
             {balance ? (
@@ -222,7 +214,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Recent payments feed */}
         <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-6 mb-8">
           <div className="flex items-center justify-between mb-5">
             <p className="text-xs font-medium text-zinc-500 uppercase tracking-widest">Recent payments</p>
@@ -253,7 +244,6 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* API reference */}
         <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-6">
           <p className="text-xs font-medium text-zinc-500 uppercase tracking-widest mb-5">API reference</p>
           <div className="flex flex-col divide-y divide-zinc-900">

@@ -55,7 +55,6 @@ export default function Home() {
     <div className="min-h-screen bg-black text-white">
       <Header />
 
-      {/* Hero */}
       <section className="relative dot-grid overflow-hidden">
         <div className="glow absolute inset-x-0 top-0 h-80 pointer-events-none" />
         <div className="relative max-w-5xl mx-auto px-6 pt-28 pb-24 text-center">
@@ -88,7 +87,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats bar */}
       <div className="border-y border-zinc-900 bg-zinc-950/50">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-center gap-10 text-sm">
           <div className="flex items-center gap-2.5 text-zinc-400">
@@ -108,7 +106,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* How it works */}
       <section id="how-it-works" className="max-w-5xl mx-auto px-6 py-20">
         <p className="text-xs font-medium text-zinc-500 uppercase tracking-widest mb-4">Protocol</p>
         <h2 className="text-2xl font-semibold mb-12">How x402 payments work</h2>
@@ -138,7 +135,6 @@ export default function Home() {
           ))}
         </div>
 
-        {/* x402 flow diagram */}
         <div className="mt-8 rounded-xl border border-zinc-800 bg-zinc-950 p-8">
           <p className="text-xs font-medium text-zinc-500 uppercase tracking-widest mb-6">Payment flow</p>
           <div className="flex flex-col gap-3">
@@ -160,14 +156,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Service catalogue */}
       <section id="catalogue" className="max-w-5xl mx-auto px-6 pb-24">
         <div className="flex items-end justify-between mb-8 flex-wrap gap-4">
           <div>
             <p className="text-xs font-medium text-zinc-500 uppercase tracking-widest mb-2">Registry</p>
             <h2 className="text-2xl font-semibold">Available services</h2>
           </div>
-          {/* Capability filter */}
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => setFilter('all')}
@@ -214,7 +208,6 @@ export default function Home() {
         )}
       </section>
 
-      {/* Register CTA */}
       <section className="border-t border-zinc-900">
         <div className="max-w-5xl mx-auto px-6 py-16 flex flex-col md:flex-row items-center justify-between gap-8">
           <div>
@@ -232,7 +225,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="border-t border-zinc-900">
         <div className="max-w-5xl mx-auto px-6 py-8 flex items-center justify-between text-xs text-zinc-600">
           <span>AgentBazaar · Built on Stellar</span>

@@ -9,14 +9,11 @@ import { getPublicKey, getBalance, getAssetLabel } from './src/stellar-wallet.js
 const app = express();
 app.use(express.json());
 
-// CORS for frontend
 app.use((_req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Payment');
   next();
 });
-
-// ── Free: health & discovery ──────────────────────────────────────────────────
 
 app.get('/health', (_req, res) => {
   res.json({
@@ -57,8 +54,6 @@ app.get('/stats', (_req, res) => {
   });
 });
 
-// ── Machine-readable x402 metadata ───────────────────────────────────────────
-
 app.get('/.well-known/x402', (_req, res) => {
   const asset = getAssetLabel();
   res.json({
@@ -71,8 +66,6 @@ app.get('/.well-known/x402', (_req, res) => {
     ],
   });
 });
-
-// ── Registry (free) ───────────────────────────────────────────────────────────
 
 app.get('/registry', (req, res) => {
   const { capability } = req.query as { capability?: string };
@@ -110,8 +103,6 @@ app.delete('/registry/:id', (req, res) => {
   res.json({ success: ok });
 });
 
-// ── Paid: web search — 0.01 XLM ──────────────────────────────────────────────
-
 app.get('/search', x402Gate(0.01), async (req, res) => {
   const q = req.query.q as string | undefined;
   const count = Math.min(Number(req.query.count ?? 5), 10);
@@ -125,8 +116,6 @@ app.get('/search', x402Gate(0.01), async (req, res) => {
   }
 });
 
-// ── Paid: news search — 0.02 XLM ─────────────────────────────────────────────
-
 app.get('/news', x402Gate(0.02), async (req, res) => {
   const q = req.query.q as string | undefined;
   const count = Math.min(Number(req.query.count ?? 5), 10);
@@ -139,8 +128,6 @@ app.get('/news', x402Gate(0.02), async (req, res) => {
     res.status(500).json({ error: String(e) });
   }
 });
-
-// ── Start ─────────────────────────────────────────────────────────────────────
 
 app.listen(CONFIG.PORT, () => {
   console.log(`

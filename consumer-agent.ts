@@ -1,17 +1,3 @@
-/**
- * AgentBazaar Consumer Agent
- *
- * Demonstrates the full x402 payment flow:
- *   1. Discover services from the registry (free)
- *   2. Hit a paid endpoint → receive 402 with payment details
- *   3. Submit XLM payment on Stellar testnet
- *   4. Retry with X-Payment: <txHash>
- *   5. Receive real search results
- *
- * Usage:
- *   CONSUMER_SECRET=S... BAZAAR_URL=http://localhost:4000 node --import tsx/esm consumer-agent.ts
- */
-
 import 'dotenv/config';
 import {
   Keypair,
@@ -22,8 +8,6 @@ import {
   Operation,
   BASE_FEE,
 } from '@stellar/stellar-sdk';
-
-// ── Config ────────────────────────────────────────────────────────────────────
 
 const CONSUMER_SECRET = process.env.CONSUMER_SECRET ?? '';
 const BAZAAR_URL      = (process.env.BAZAAR_URL ?? 'http://localhost:4000').replace(/\/$/, '');
@@ -38,15 +22,13 @@ if (!CONSUMER_SECRET) {
 const consumer = Keypair.fromSecret(CONSUMER_SECRET);
 const server   = new Horizon.Server(HORIZON_URL, { allowHttp: false });
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
 function log(tag: string, msg: string) {
   const colors: Record<string, string> = {
-    INFO:  '\x1b[36m',   // cyan
-    PAY:   '\x1b[33m',   // yellow
-    OK:    '\x1b[32m',   // green
-    ERR:   '\x1b[31m',   // red
-    STEP:  '\x1b[35m',   // magenta
+    INFO:  '\x1b[36m',
+    PAY:   '\x1b[33m',
+    OK:    '\x1b[32m',
+    ERR:   '\x1b[31m',
+    STEP:  '\x1b[35m',
   };
   const reset = '\x1b[0m';
   console.log(`  ${colors[tag] ?? ''}[${tag}]${reset} ${msg}`);
@@ -80,7 +62,6 @@ async function callWithPayment(
   const url = new URL(`${BAZAAR_URL}${path}`);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
 
-  // Step 1 — probe (expect 402)
   log('STEP', `GET ${path}?${url.searchParams}`);
   const probe = await fetch(url.toString());
 
@@ -96,11 +77,9 @@ async function callWithPayment(
 
   log('PAY', `402 received — paying ${actualAmount} XLM to ${actualDest.slice(0, 8)}…`);
 
-  // Step 2 — pay on Stellar
   const txHash = await sendXLM(actualDest, actualAmount);
   log('PAY', `tx submitted → ${txHash}`);
 
-  // Step 3 — retry with proof
   log('STEP', `Retrying with X-Payment: ${txHash.slice(0, 12)}…`);
   const paid = await fetch(url.toString(), {
     headers: { 'X-Payment': txHash },
@@ -114,8 +93,6 @@ async function callWithPayment(
   return await paid.json();
 }
 
-// ── Main ──────────────────────────────────────────────────────────────────────
-
 async function main() {
   console.log('\n  ╔══════════════════════════════════════════╗');
   console.log('  ║       AGENTBAZAAR CONSUMER AGENT         ║');
@@ -123,7 +100,6 @@ async function main() {
 
   log('INFO', `Consumer wallet: ${consumer.publicKey()}`);
 
-  // Check consumer balance
   try {
     const account = await server.loadAccount(consumer.publicKey());
     const xlm = account.balances.find(b => b.asset_type === 'native')?.balance ?? '0';
@@ -133,7 +109,6 @@ async function main() {
     process.exit(1);
   }
 
-  // ── Step 1: Discover services (free) ────────────────────────────────────────
   console.log('\n  ── Discovering services from registry ──────────────────────\n');
   const registryRes = await fetch(`${BAZAAR_URL}/registry`);
   const registry    = await registryRes.json() as { services: { id: string; name: string; capabilities: string[]; endpoints: { path: string; price: string; asset: string }[]; url: string }[]; total: number };
@@ -146,7 +121,6 @@ async function main() {
     }
   }
 
-  // Find the search service
   const searchSvc = registry.services.find(s => s.capabilities.includes('web-search'));
   if (!searchSvc) {
     log('ERR', 'No web-search service found in registry');
@@ -154,9 +128,8 @@ async function main() {
   }
   const searchEndpoint = searchSvc.endpoints.find(e => e.path === '/search');
   const searchPrice    = parseFloat(searchEndpoint?.price ?? '0.01');
-  const payTo          = ''; // will be read from 402 response
+  const payTo          = '';
 
-  // ── Step 2: Web search (paid) ────────────────────────────────────────────────
   console.log('\n  ── Web search (x402 payment) ────────────────────────────────\n');
   log('INFO', `Query: "${QUERY}"`);
   log('INFO', `Price: ${searchPrice} XLM`);
@@ -175,7 +148,6 @@ async function main() {
     console.log(`    ${r.description.slice(0, 120)}${r.description.length > 120 ? '…' : ''}`);
   }
 
-  // ── Step 3: News search (paid) ───────────────────────────────────────────────
   console.log('\n  ── News search (x402 payment) ───────────────────────────────\n');
   const newsEndpoint = searchSvc.endpoints.find(e => e.path === '/news');
   const newsPrice    = parseFloat(newsEndpoint?.price ?? '0.02');

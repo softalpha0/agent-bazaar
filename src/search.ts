@@ -17,7 +17,6 @@ export interface NewsResult {
   age?: string;
 }
 
-// Mock results for demo when no API key is set
 function mockWebResults(query: string): SearchResult[] {
   return [
     { title: `${query} — Overview`, url: `https://example.com/${query.replace(/\s+/g, '-')}`, description: `Comprehensive overview of ${query}. [DEMO — add TAVILY_API_KEY for live results]`, age: '1 day ago' },

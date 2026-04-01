@@ -36,7 +36,6 @@ export default function ServiceCard({ service }: { service: Service }) {
 
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-6 flex flex-col gap-5 hover:border-zinc-700 transition-colors">
-      {/* Header */}
       <div className="flex items-start gap-4">
         <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-sm font-semibold text-zinc-300 shrink-0">
           {icon}
@@ -55,7 +54,6 @@ export default function ServiceCard({ service }: { service: Service }) {
         </div>
       </div>
 
-      {/* Capabilities */}
       <div className="flex flex-wrap gap-1.5">
         {service.capabilities.map(cap => (
           <span
@@ -67,7 +65,6 @@ export default function ServiceCard({ service }: { service: Service }) {
         ))}
       </div>
 
-      {/* Endpoints */}
       <div className="border-t border-zinc-900 pt-4 flex flex-col gap-2">
         {service.endpoints.map(ep => (
           <div key={ep.path} className="flex items-center justify-between text-xs">
