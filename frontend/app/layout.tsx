@@ -7,6 +7,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'sw
 export const metadata: Metadata = {
   title: 'AgentBazaar — x402 Service Registry on Stellar',
   description: 'Discover and pay for AI agent services using x402 micropayments on Stellar. No subscriptions — pay per query.',
+  icons: { icon: '/logo.png', apple: '/logo.png' },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
