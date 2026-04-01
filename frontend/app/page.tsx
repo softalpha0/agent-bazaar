@@ -235,7 +235,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-zinc-900">
         <div className="max-w-5xl mx-auto px-6 py-8 flex items-center justify-between text-xs text-zinc-600">
-          <span>AgentBazaar · Agents on Stellar Hackathon 2026</span>
+          <span>AgentBazaar · Built on Stellar</span>
           <span>x402 · Stellar Testnet</span>
         </div>
       </footer>
