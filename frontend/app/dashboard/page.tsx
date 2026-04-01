@@ -52,6 +52,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [balance, setBalance] = useState<Balance | null>(null);
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [allPayments, setAllPayments] = useState<Payment[]>([]);
   const [uptime, setUptime] = useState('—');
 
   async function fetchAll() {
@@ -67,15 +68,25 @@ export default function Dashboard() {
 
   async function fetchPayments(publicKey: string) {
     try {
+      // Fetch last 8 for the feed
       const res = await fetch(
         `https://horizon-testnet.stellar.org/accounts/${publicKey}/payments?order=desc&limit=8`
       );
       const data = await res.json();
-      setPayments(
-        (data._embedded?.records ?? []).filter(
-          (p: Payment) => p.type === 'payment' && p.asset_type === 'native'
-        )
+      const incoming = (data._embedded?.records ?? []).filter(
+        (p: Payment) => p.type === 'payment' && p.asset_type === 'native' && p.from !== publicKey
       );
+      setPayments(incoming);
+
+      // Fetch up to 200 to calculate total earned
+      const allRes = await fetch(
+        `https://horizon-testnet.stellar.org/accounts/${publicKey}/payments?order=desc&limit=200`
+      );
+      const allData = await allRes.json();
+      const allIncoming = (allData._embedded?.records ?? []).filter(
+        (p: Payment) => p.type === 'payment' && p.asset_type === 'native' && p.from !== publicKey
+      );
+      setAllPayments(allIncoming);
     } catch { /* horizon offline */ }
   }
 
@@ -107,7 +118,10 @@ export default function Dashboard() {
     return () => clearInterval(t);
   }, [stats?.startedAt]);
 
-  const earned = stats ? stats.totalEarned.toFixed(4) : '—';
+  // Derive earned and call count from real Horizon data
+  const totalEarned = allPayments.reduce((sum, p) => sum + parseFloat(p.amount ?? '0'), 0);
+  const earned = allPayments.length > 0 ? totalEarned.toFixed(4) : (stats ? stats.totalEarned.toFixed(4) : '—');
+  const totalCalls = allPayments.length > 0 ? allPayments.length : (stats?.totalCalls ?? 0);
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -128,7 +142,7 @@ export default function Dashboard() {
 
         {/* Stat cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <StatCard label="Total calls" value={stats?.totalCalls ?? '—'} live />
+          <StatCard label="Total calls" value={totalCalls} live />
           <StatCard label="XLM earned" value={earned} sub={`${stats?.asset ?? 'XLM'} testnet`} live />
           <StatCard label="Uptime" value={uptime} sub="hh:mm:ss" />
           <StatCard
