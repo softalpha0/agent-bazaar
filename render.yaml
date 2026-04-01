@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: agent-bazaar-api
+    runtime: node
+    rootDir: .
+    buildCommand: npm install
+    startCommand: node --import tsx/esm index.ts
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: STELLAR_SECRET_KEY
+        sync: false
+      - key: STELLAR_NETWORK
+        value: testnet
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: BASE_URL
+        sync: false
+
+  - type: web
+    name: agent-bazaar-frontend
+    runtime: node
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm run render
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BAZAAR_API_URL
+        sync: false
