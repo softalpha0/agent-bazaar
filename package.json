@@ -11,11 +11,11 @@
     "@stellar/stellar-sdk": "^14.6.1",
     "dotenv": "^16.4.5",
     "express": "^5.2.1",
-    "@types/express": "^5.0.6"
+    "@types/express": "^5.0.6",
+    "tsx": "^4.19.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "tsx": "^4.19.0",
     "typescript": "^5.7.0"
   },
   "engines": {
